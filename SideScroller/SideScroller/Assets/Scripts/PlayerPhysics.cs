@@ -16,7 +16,7 @@ public class PlayerPhysics : RayCastManager
     }
 
  //-----------------------------------------Move Functions------------------------------------- 
-    public void Move(Vector3 velocity)
+    public void Move(Vector3 velocity, bool standingOnPlatform=false)
     {
         // calculate Corners
         UpdateRaycastOrigins();
@@ -34,6 +34,10 @@ public class PlayerPhysics : RayCastManager
         if(velocity.y != 0)
         { 
             VerticalCollisions(ref velocity);
+        }
+        if (standingOnPlatform)
+        {
+            collisionInfo.below = true;
         }
         // movement
         transform.Translate(velocity);
@@ -54,6 +58,11 @@ public class PlayerPhysics : RayCastManager
            
             if (hit)
             {
+                if (hit.distance==0)
+                {
+                    continue;
+                }
+
                 float slopeAngle = Vector2.Angle(hit.normal,Vector2.up);
                 if(i==0 && slopeAngle <= maxClimbAngle)
                 {

@@ -64,6 +64,7 @@ public class PlayerPhysics : RayCastManager
                 }
 
                 float slopeAngle = Vector2.Angle(hit.normal,Vector2.up);
+           
                 if(i==0 && slopeAngle <= maxClimbAngle)
                 {
                     ClimpSlope(ref velocity,slopeAngle);
@@ -102,6 +103,11 @@ public class PlayerPhysics : RayCastManager
           
             if (hit)
             {
+                if (hit.distance == 0)
+                {
+                    continue;
+                }
+
                 velocity.y = (hit.distance - skinWidth) * directionY;
                 rayLength = hit.distance;
 
@@ -138,7 +144,7 @@ public class PlayerPhysics : RayCastManager
         float directionX = Mathf.Sign(velocity.x);
         Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottonRight : raycastOrigins.bottonLeft;
         RaycastHit2D hit = Physics2D.Raycast(rayOrigin, -Vector2.up, Mathf.Infinity, collisionMask);
-
+   
         if (hit)
         {
             float slopeAngle = Vector2.Angle(hit.normal, Vector2.up);

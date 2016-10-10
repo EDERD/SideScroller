@@ -21,6 +21,7 @@ public class PlataformController : RayCastManager {
 
     public override void Start () {
         base.Start();
+        // Set the Path Platform
         globalWayPoints = new Vector3 [LocalWaypoints.Length];
         for (int i=0;i < LocalWaypoints.Length;i++)
         {
@@ -33,7 +34,7 @@ public class PlataformController : RayCastManager {
 	
 	void Update () {
 
-        UpdateRaycastOrigins();
+        UpdateRaycastOrigins();  // refresh bounds
         Vector3 velocity =CalculatePlatformMovement();
         CalculatePassengerMovement(velocity);
 
@@ -42,20 +43,23 @@ public class PlataformController : RayCastManager {
         MovePassengers(false); 
 	}
 
+    // smooth Movement
     float Ease(float x)
     {
         float a = easeAmount + 1;
         return Mathf.Pow(x, a) / (Mathf.Pow(x, a) + Mathf.Pow(1 - x, a));
     }
 
+    // Plataform Movement Path
     Vector3 CalculatePlatformMovement()
     {
+        // Time wait 
         if (Time.time < nextMoveTime)
         {
             return Vector3.zero;
         }
 
-        
+       
         fromWayPointIndex %= globalWayPoints.Length;
         int toWayPointIndex = (fromWayPointIndex + 1) %globalWayPoints.Length;
       
@@ -105,6 +109,7 @@ public class PlataformController : RayCastManager {
     void CalculatePassengerMovement(Vector3 Velocity)
     {
         HashSet<Transform> movedPassengers = new HashSet<Transform>();
+       
         passengerMovement = new List<PassengerMovement>();
 
         float directionX = Mathf.Sign(Velocity.x);
@@ -151,18 +156,20 @@ public class PlataformController : RayCastManager {
                 Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottonLeft : raycastOrigins.bottonRight;
                 rayOrigin += Vector2.up * (horizontalRaySpacing * i);
                 RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, raylenght, passengerMask);
-                // Debug.DrawRay(rayOrigin, Vector2.up * directionY, Color.red); ,raylenght,passengerMask
+                //Debug.DrawRay(rayOrigin, Vector2.right * directionX, Color.red);
 
                 if (hit) // found a passenger
                 {
+                    
 
                     if (!movedPassengers.Contains(hit.transform))
                     {
 
                         movedPassengers.Add(hit.transform);
                         float pushX = Velocity.x - (hit.distance - skinWidth) * directionX;
+                   
                         float pushY = -skinWidth;
-
+                       
                         passengerMovement.Add(new PassengerMovement(hit.transform, new Vector3(pushX, pushY), false, true));
                     }
 

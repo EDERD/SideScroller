@@ -22,6 +22,7 @@ public class RayCastManager : MonoBehaviour {
         collider = GetComponent<BoxCollider2D>();
         // Calculate Space between Rays
         CalculateRaySpacing();
+       
 
     }
 

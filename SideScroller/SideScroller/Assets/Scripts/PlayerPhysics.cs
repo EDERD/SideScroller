@@ -8,29 +8,39 @@ public class PlayerPhysics : RayCastManager
     float maxClimbAngle = 70f;
     float maxDescendAngle = 70f;
     public CollisionInfo collisionInfo;
-
+    Vector2 playerInput;
 
     public override void Start()
     {
         base.Start();
     }
 
- //-----------------------------------------Move Functions------------------------------------- 
-    public void Move(Vector3 velocity, bool standingOnPlatform=false)
+    //-----------------------------------------Move Functions------------------------------------- 
+    public void Move(Vector3 velocity, bool standingOnPlatform = false)
     {
+        Move(velocity, Vector2.zero,  standingOnPlatform );
+    }
+
+    public void Move(Vector3 velocity,Vector2 input, bool standingOnPlatform=false)
+    {
+        playerInput = input;
         // calculate Corners
         UpdateRaycastOrigins();
         // Reset Collisions Info
         collisionInfo.Reset();
 
+        if (velocity.x != 0)
+        {
+            collisionInfo.faceDir =(int) Mathf.Sign(velocity.x);
+        }
+
         if(velocity.y< 0)
         {
             DescendSlope(ref velocity);
         }
-        if (velocity.x!=0)
-        { 
-            HorizontalCollisions(ref velocity);
-        }
+       
+        HorizontalCollisions(ref velocity);
+        
         if(velocity.y != 0)
         { 
             VerticalCollisions(ref velocity);
@@ -46,10 +56,16 @@ public class PlayerPhysics : RayCastManager
     // ******************* Simple Move Functions*****************
     void HorizontalCollisions(ref Vector3 velocity)
     {
-        float directionX = Mathf.Sign(velocity.x);
+        float directionX = collisionInfo.faceDir;
         // ray for Horizontal Collision detection (ray length is the movement distance per frame)
         float rayLength = Mathf.Abs(velocity.x) + skinWidth;
         // Ray Collision Detection
+
+        if (Mathf.Abs(velocity.x)< skinWidth)
+        {
+            rayLength = 2 * skinWidth;
+        }
+
         for (int i = 0; i < horizontalRayCount; i++)
         {
             Vector2 rayOrigin = (directionX == -1) ? raycastOrigins.bottonLeft : raycastOrigins.bottonRight;
@@ -103,6 +119,19 @@ public class PlayerPhysics : RayCastManager
           
             if (hit)
             {
+                if (hit.collider.tag=="Through")
+                {
+                   
+                    if(directionY==1)
+                    {
+                        continue;
+                    }
+                    if(playerInput.y==-1)
+                    {
+                        continue;
+                    }
+                }
+
                 if (hit.distance == 0)
                 {
                     continue;
@@ -175,6 +204,7 @@ public class PlayerPhysics : RayCastManager
 
     public struct CollisionInfo
     {
+        public int faceDir;
         public bool above, below;
         public bool left, right;
         public bool climbingSlope, descendingSlopes;
@@ -186,7 +216,7 @@ public class PlayerPhysics : RayCastManager
             above = below = false;
             left = right = false;
             slopeAngle =oldAngle= 0;
-
+            
         }    
 
     }

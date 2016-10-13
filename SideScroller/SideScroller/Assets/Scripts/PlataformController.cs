@@ -36,11 +36,11 @@ public class PlataformController : RayCastManager {
 
         UpdateRaycastOrigins();  // refresh bounds
         Vector3 velocity =CalculatePlatformMovement();
-        CalculatePassengerMovement(velocity);
-
-        MovePassengers(true);
+       // CalculatePassengerMovement(velocity);
+       
+    //    MovePassengers(true);
         transform.Translate(velocity);
-        MovePassengers(false); 
+    //    MovePassengers(false); 
 	}
 
     // smooth Movement
@@ -66,9 +66,10 @@ public class PlataformController : RayCastManager {
         float distanceBetweenPoints = Vector3.Distance(globalWayPoints[fromWayPointIndex],globalWayPoints[toWayPointIndex]);
         percentBetweenWaypoints += Time.deltaTime * speed / distanceBetweenPoints;
         percentBetweenWaypoints = Mathf.Clamp01(percentBetweenWaypoints);
+       
         float easedPercentBetweenWayPoints = Ease(percentBetweenWaypoints);
-
         Vector3 newpos = Vector3.Lerp(globalWayPoints[fromWayPointIndex],globalWayPoints[toWayPointIndex],easedPercentBetweenWayPoints);
+
         if (percentBetweenWaypoints >= 1)
         {
             percentBetweenWaypoints = 0;
@@ -83,8 +84,9 @@ public class PlataformController : RayCastManager {
             }
             nextMoveTime = Time.time + waitTime;
         }
-
-        return newpos-transform.position;
+       
+        return newpos- this.transform.position;
+         
     }
 
 
@@ -128,7 +130,7 @@ public class PlataformController : RayCastManager {
                 RaycastHit2D hit = Physics2D.Raycast(rayOrigin,Vector2.up*directionY,raylenght,passengerMask);
                 // Debug.DrawRay(rayOrigin, Vector2.up * directionY, Color.red); ,raylenght,passengerMask
 
-                if (hit) // found a passenger
+                if (hit && hit.distance!=0) // found a passenger
                 {
                    
                     if(!movedPassengers.Contains(hit.transform))
@@ -158,7 +160,7 @@ public class PlataformController : RayCastManager {
                 RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.right * directionX, raylenght, passengerMask);
                 //Debug.DrawRay(rayOrigin, Vector2.right * directionX, Color.red);
 
-                if (hit) // found a passenger
+                if (hit && hit.distance != 0) // found a passenger
                 {
                     
 
@@ -192,7 +194,7 @@ public class PlataformController : RayCastManager {
                 RaycastHit2D hit = Physics2D.Raycast(rayOrigin, Vector2.up, raylenght, passengerMask);
                 // Debug.DrawRay(rayOrigin, Vector2.up * directionY, Color.red); ,raylenght,passengerMask
 
-                if (hit) // found a passenger
+                if (hit && hit.distance != 0) // found a passenger
                 {
 
                     if (!movedPassengers.Contains(hit.transform))

@@ -36,11 +36,11 @@ public class PlataformController : RayCastManager {
 
         UpdateRaycastOrigins();  // refresh bounds
         Vector3 velocity =CalculatePlatformMovement();
-       // CalculatePassengerMovement(velocity);
+        CalculatePassengerMovement(velocity);
        
-    //    MovePassengers(true);
+       MovePassengers(true);
         transform.Translate(velocity);
-    //    MovePassengers(false); 
+        MovePassengers(false); 
 	}
 
     // smooth Movement

@@ -3,9 +3,11 @@ using System.Collections;
 [RequireComponent(typeof(BoxCollider2D))]
 
 public class RayCastManager : MonoBehaviour {
-
-    public int horizontalRayCount = 4;
-    public int verticalRayCount = 4;
+    [HideInInspector]
+    public int horizontalRayCount ;
+    [HideInInspector]
+    public int verticalRayCount ;
+    const float distanceBetweenRays = 0.25f;
     public LayerMask collisionMask;
     public const float skinWidth = 0.015f;
     [HideInInspector]
@@ -17,13 +19,15 @@ public class RayCastManager : MonoBehaviour {
     [HideInInspector]
     public RaycastOrigins raycastOrigins;
 
+    public virtual void Awake()
+    {
+        collider = GetComponent<BoxCollider2D>();      
+    }
+
     public virtual void Start()
     {
-        collider = GetComponent<BoxCollider2D>();
-        // Calculate Space between Rays
+         // Calculate Space between Rays
         CalculateRaySpacing();
-       
-
     }
 
 
@@ -45,9 +49,12 @@ public class RayCastManager : MonoBehaviour {
         Bounds bounds = collider.bounds;
         bounds.Expand(skinWidth * -2);
 
+        float boundWidth = bounds.size.x;
+        float boundHeight = bounds.size.y;
         // the Rays couldn't be less than 2
-        horizontalRayCount = Mathf.Clamp(horizontalRayCount, 2, int.MaxValue);
-        verticalRayCount = Mathf.Clamp(verticalRayCount, 2, int.MaxValue);
+
+        horizontalRayCount = Mathf.RoundToInt(boundHeight/distanceBetweenRays);
+        verticalRayCount = Mathf.RoundToInt(boundWidth / distanceBetweenRays);
         // Space between Rays
         horizontalRaySpacing = bounds.size.y / (horizontalRayCount - 1);
         verticalRaySpacing = bounds.size.x / (verticalRayCount - 1);
